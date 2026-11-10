@@ -340,6 +340,28 @@ jobs:
           docker build --pull=false -t "$DOCKER_IMAGE" -f "$BUILD_DIR/Dockerfile" "$BUILD_DIR"
           docker image inspect "$DOCKER_IMAGE" --format 'образ: {{.Id}} ({{.Size}} байт)'
 
+      - name: Add swap
+        run: |
+          set -euxo pipefail
+          # 16 ГБ раннера не хватает на пик R8: минификация и dex-десугаринг
+          # Telegram держат несколько гигабайт и в куче, и вне её. Без свопа
+          # ядро убивает JVM, и gradle пишет «daemon disappeared unexpectedly» —
+          # без единой ошибки компиляции, то есть два часа сборки в никуда.
+          # Своп как страховка: пик длится минуты, сброс холодных страниц на
+          # диск дешевле, чем повторный прогон.
+          free -h
+          sudo swapoff /swapfile 2>/dev/null || true
+          sudo rm -f /swapfile
+          sudo fallocate -l 8G /swapfile \
+            || sudo dd if=/dev/zero of=/swapfile bs=1M count=8192 status=none
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          # swappiness=10: своп только под реальным давлением, а не «на всякий случай».
+          sudo sysctl -w vm.swappiness=10
+          echo "--- после ---"
+          free -h
+
       - name: Build the APK
         run: |
           set -euxo pipefail
@@ -348,6 +370,10 @@ jobs:
           # в образе пользователь gradle (uid 1000) и писать в них не может.
           # GRADLE_USER_HOME выносим на раннер — так зависимости переживают прогон
           # (и подхватываются кэшем), а не скачиваются заново каждый раз.
+          #
+          # --max-workers=2 вместо --parallel: параллельные R8 и l8DexDesugarLib
+          # складывают пики памяти и роняют демона. Два воркера дают выигрыш на
+          # javac/ресурсах, но не запускают два тяжёлых dex-процесса сразу.
           docker run --rm \
             --user root \
             -v "$BUILD_DIR":/work \
@@ -356,7 +382,7 @@ jobs:
             -e GRADLE_USER_HOME=/gradle-home \
             -e GRADLE_TASKS="$GRADLE_TASKS" \
             "$DOCKER_IMAGE" \
-            bash -c 'set -euxo pipefail; cd /work; gradle --no-daemon --parallel $GRADLE_TASKS --stacktrace'
+            bash -c 'set -euxo pipefail; cd /work; gradle --no-daemon --max-workers=2 $GRADLE_TASKS --stacktrace'
 
       - name: Locate the APK
         id: apk
