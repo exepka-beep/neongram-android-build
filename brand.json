@@ -1,0 +1,112 @@
+{
+  "_comment": "Единый конфиг бренда NeonGram. Все скрипты ребрендинга читают этот файл. Меняешь бренд здесь — меняется везде.",
+  "product": {
+    "name": "NeonGram",
+    "short_name": "NeonGram",
+    "username_prefix": "neongram",
+    "app_scheme": "neongram",
+    "premium_name": "NeonGram Premium",
+    "stars_name": "NeonGram Stars",
+    "org_name": "NeonGram"
+  },
+  "replace": {
+    "_comment": "Правила замены строк в текстовых ресурсах клиентов. Порядок важен: длинные раньше коротких.",
+    "_android_overlay": "Android-конвейер накладывает overlay XTree Gram, поэтому в текстовых ресурсах уже стоит 'Xtreegram' вместо 'Telegram'. Поэтому правил две группы: сначала снимаем следы XTree Gram, потом добираем то, что XTree Gram сам не тронул. В Java применяется только группа XTree Gram — правило 'Telegram' там опасно (идентификаторы, t.me-ссылки, telegram.org).",
+    "rules": [
+      {
+        "from": "XTree Gram",
+        "to": "NeonGram",
+        "skip_after": [],
+        "skip_before": []
+      },
+      {
+        "from": "Xtreegram",
+        "to": "NeonGram",
+        "skip_after": [],
+        "skip_before": []
+      },
+      {
+        "from": "XTREEGRAM",
+        "to": "NEONGRAM",
+        "skip_after": [],
+        "skip_before": []
+      },
+      {
+        "from": "Telegram",
+        "to": "NeonGram",
+        "skip_after": [
+          ".org",
+          ".ORG"
+        ],
+        "skip_before": [
+          "/"
+        ]
+      },
+      {
+        "from": "TELEGRAM",
+        "to": "NEONGRAM",
+        "skip_after": [
+          ".ORG"
+        ],
+        "skip_before": [
+          "/"
+        ]
+      }
+    ]
+  },
+  "android": {
+    "_keystore_password_comment": "Пароля здесь НЕТ намеренно. Этот файл уезжает в публичный репозиторий сборки, а пароль ключа подписи — секрет. Он приходит на шаге ребрендинга: --keystore-password, переменная окружения ANDROID_KEYSTORE_PASSWORD или секрет GitHub ANDROID_KEYSTORE_PASSWORD. Локально пароль лежит в ../artifacts/KEYSTORE_INFO.txt.",
+    "app_name": "NeonGram",
+    "app_name_beta": "NeonGram Beta",
+    "package": "com.neongram.messenger",
+    "namespace": "org.telegram.messenger.regular",
+    "flavor": "afat",
+    "keystore_file": "release.keystore",
+    "keystore_alias": "neongramkey",
+    "keystore_type": "PKCS12",
+    "keystore_keyalg": "RSA",
+    "keystore_keysize": 4096,
+    "keystore_validity_days": 10950,
+    "keystore_cert_sha256": "09:70:06:99:83:2D:2E:EF:FC:7F:BD:97:A8:AD:47:C4:E0:12:F4:B5:A9:E9:4A:22:54:A0:FF:0F:E4:E5:08:C7"
+  },
+  "ios": {
+    "app_name": "NeonGram",
+    "bundle_id": "com.neongram.messenger"
+  },
+  "desktop": {
+    "app_name": "NeonGram Desktop",
+    "short_app_name": "NeonGram",
+    "application_name": "NeonGramDesktop",
+    "company_name": "NeonGram",
+    "bundle_id": "com.neongram.desktop",
+    "linux_app_id": "com.neongram.desktop"
+  },
+  "pc_client": {
+    "_comment": "ПК-версия делается как в XTree Gram: берётся ГОТОВЫЙ билд OwpenGram Desktop с GitHub-релизов (owpengram/owpengram-desktop-client), сборка НЕ нужна. Клиент подключается к серверу через Add server (host:port) и сам подтягивает RSA-ключ и имя с /owpengram/server-info.",
+    "distribution": "prebuilt",
+    "source_releases": "https://github.com/owpengram/owpengram-desktop-client/releases",
+    "exe_name": "NeonGram.exe",
+    "server_name": "NeonGram",
+    "server_description": "Self-hosted NeonGram server.",
+    "server_icon_env": "TELESRV_OWPENGRAM_SERVER_ICON"
+  },
+  "server": {
+    "_comment": "NeonGram: домена нет, клиент ходит на IP. Домен появится — заменить domain/base_url.",
+    "domain": "144.31.30.211",
+    "base_url": "http://144.31.30.211",
+    "web_base_url": "http://144.31.30.211",
+    "advertise_ip": "144.31.30.211",
+    "public_listen_host": "127.0.0.1",
+    "server_port": 2398,
+    "dc_id": 2,
+    "default_country_code": "US",
+    "websocket_allowed_origins": "http://144.31.30.211",
+    "image_prefix": "ghcr.io/iamxvbaba/gramsrv",
+    "image_tag": "main"
+  },
+  "telegram_bot": {
+    "_comment": "Бот в настоящем Telegram для релея OTP и магазина. Токен вписать после создания у @BotFather.",
+    "username": "NeonGramAuth_bot",
+    "token": "PLACEHOLDER_BOT_TOKEN"
+  }
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NeonGram: иконка запуска (Android 12+ splash).
+     Тёмный круг с неоновым кантом и белым бумажным самолётиком.
+     Система маскирует drawable в круг, поэтому круг нарисован full-bleed
+     (радиус 160 в viewport 320), а самолётик занимает ~55% ширины. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="320dp"
+    android:viewportWidth="320"
+    android:viewportHeight="320">
+
+    <path
+        android:fillColor="#0A0E14"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="7"
+        android:pathData="M160,3.5 C246.4,3.5 316.5,73.6 316.5,160 C316.5,246.4 246.4,316.5 160,316.5 C73.6,316.5 3.5,246.4 3.5,160 C3.5,73.6 73.6,3.5 160,3.5 Z" />
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M268.75,67.19 L51.56,146.88 L142.19,170.31 Z" />
+
+    <path
+        android:fillColor="#BFE9F5"
+        android:pathData="M268.75,67.19 L142.19,170.31 L109.38,250 Z" />
+</vector>
